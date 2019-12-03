@@ -27,4 +27,12 @@ package object util {
    */
   def incrementMap[A](map: Map[A, Int], key: A): Map[A, Int] =
     map + (key -> map.get(key).fold(1)(_ + 1))
+
+  /** Calculate Manhattan distance
+   *  @param p1 point 1
+   *  @param p2 point 2
+   *  @return Manhattan distance
+   */
+  def manhattanDistance(p1: (Int, Int), p2: (Int, Int)): Int =
+    Math.abs(p1._1 - p2._1) + Math.abs(p1._2 - p2._2)
 }

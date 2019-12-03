@@ -17,7 +17,7 @@ class Day02Spec extends PropSpec with TableDrivenPropertyChecks with Matchers {
     )
 
   property("all example cases for part 1 should be fulfilled") {
-    forAll(examples1) { (before: ArraySeq[Int], after: ArraySeq[Int]) =>
+    forAll (examples1) { (before: ArraySeq[Int], after: ArraySeq[Int]) =>
       Day02.execute(before, 0) shouldEqual after
     }
   }
