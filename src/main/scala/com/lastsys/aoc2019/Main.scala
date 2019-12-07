@@ -6,6 +6,7 @@ import com.lastsys.aoc2019.day03.Day03
 import com.lastsys.aoc2019.day04.Day04
 import com.lastsys.aoc2019.day05.Day05
 import com.lastsys.aoc2019.day06.Day06
+import com.lastsys.aoc2019.day07.Day07
 import com.lastsys.aoc2019.util.time
 
 object Main {
@@ -15,6 +16,7 @@ object Main {
 //    time { Day03.run() }
 //    time { Day04.run() }
 //    time { Day05.run() }
-    time { Day06.run() }
+//    time { Day06.run() }
+    time { Day07.run() }
   }
 }
