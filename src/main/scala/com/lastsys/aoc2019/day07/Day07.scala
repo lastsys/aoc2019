@@ -30,7 +30,7 @@ object Day07 extends AocTask {
          b <- low to high if b != a;
          c <- low to high if c != b && c != a;
          d <- low to high if d != c && d != b && d != a;
-         e <- low to high if e != d && e != d && e != c && e != b && e != a) {
+         e <- low to high if e != d && e != c && e != b && e != a) {
 
       val s = Seq(a, b, c, d, e)
       val t = if (!feedback) {
