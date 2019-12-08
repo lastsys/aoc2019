@@ -16,15 +16,37 @@ class Day07Spec extends PropSpec with TableDrivenPropertyChecks with Matchers {
         1002, 33, 7, 33, 1, 33, 31, 31, 1, 32, 31, 31, 4, 31, 99, 0, 0, 0), 65210, Seq(1, 0, 4, 3, 2))
     )
 
-    property("example 1 max signals should be valid") {
-      forAll(examples1) { (program: ArraySeq[Int], thruster: Int, sequence: Seq[Int]) =>
-        Day07.thrust(program, sequence) shouldBe thruster
-      }
+  property("example 1 max signals should be valid") {
+    forAll(examples1) { (program: ArraySeq[Int], thruster: Int, sequence: Seq[Int]) =>
+      Day07.thrust(program, sequence) shouldBe thruster
     }
+  }
 
-    property("all example cases for part 1 should be fulfilled") {
-      forAll(examples1) { (program: ArraySeq[Int], thruster: Int, sequence: Seq[Int]) =>
-        Day07.maximizeThruster(program) shouldBe (thruster, sequence)
-      }
+  property("all example cases for part 1 should be fulfilled") {
+    forAll(examples1) { (program: ArraySeq[Int], thruster: Int, sequence: Seq[Int]) =>
+      Day07.maximizeThruster(program) shouldBe(thruster, sequence)
     }
+  }
+
+  val examples2: TableFor3[ArraySeq[Int], Int, ArraySeq[Int]] =
+    Table(
+      ("program", "thruster", "sequence"),
+      (ArraySeq(3, 26, 1001, 26, -4, 26, 3, 27, 1002, 27, 2, 27, 1, 27, 26,
+        27, 4, 27, 1001, 28, -1, 28, 1005, 28, 6, 99, 0, 0, 5), 139629729, ArraySeq(9, 8, 7, 6, 5)),
+      (ArraySeq(3, 52, 1001, 52, -5, 52, 3, 53, 1, 52, 56, 54, 1007, 54, 5, 55, 1005, 55, 26, 1001, 54,
+        -5, 54, 1105, 1, 12, 1, 53, 54, 53, 1008, 54, 0, 55, 1001, 55, 1, 55, 2, 53, 55, 53, 4,
+        53, 1001, 56, -1, 56, 1005, 56, 6, 99, 0, 0, 0, 0, 10), 18216, ArraySeq(9, 7, 8, 5, 6))
+    )
+
+  property("example 2 max signals should be valid") {
+    forAll(examples2) { (program: ArraySeq[Int], thruster: Int, sequence: Seq[Int]) =>
+      Day07.thrustWithFeedback(program, sequence) shouldBe thruster
+    }
+  }
+
+  property("all example cases for part 2 should be fulfilled") {
+    forAll(examples2) { (program: ArraySeq[Int], thruster: Int, sequence: Seq[Int]) =>
+      Day07.maximizeThruster(program, 5, 9, true) shouldBe(thruster, sequence)
+    }
+  }
 }
