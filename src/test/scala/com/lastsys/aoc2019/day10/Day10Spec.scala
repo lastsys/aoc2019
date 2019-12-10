@@ -68,4 +68,14 @@ class Day10Spec extends PropSpec with TableDrivenPropertyChecks with Matchers {
       Day10.findBestAsteroid(Day10.parseMap(map)) shouldBe (position, count)
     }
   }
+
+  val example2 = """.#....#####...#..
+                   |##...##.#####..##
+                   |##...#...#.#####.
+                   |..#.....X...###..
+                   |..#.#.....#....##""".stripMargin.split("\n")
+
+  property("example 2 test case should be valid") {
+
+  }
 }
