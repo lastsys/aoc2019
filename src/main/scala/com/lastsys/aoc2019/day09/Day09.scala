@@ -18,11 +18,9 @@ object Day09 extends AocTask {
       val program = data.head.split(",")
 
       val part1 = execute(convertProgramToMapMem(program), 1)
-      println(part1)
       println(s"Day09 :: Part1 = ${part1.output}")
 
       val part2 = execute(convertProgramToMapMem(program), 2)
-      println(part2)
       println(s"Day09 :: Part2 = ${part2.output}")
     }
   }
