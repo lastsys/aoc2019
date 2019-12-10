@@ -15,8 +15,12 @@ object Day10 extends AocTask {
 
     input.foreach { data =>
       val m = parseMap(data)
-      val (_, count) = findBestAsteroid(m)
+      val (point, count) = findBestAsteroid(m)
       println(s"Day10 :: Part1 = $count")
+
+      val eliminationOrder = eliminateInOrder(m, point)
+      val e200 = eliminationOrder(200 - 1)
+      println(s"Day10 :: Part2 = ${e200.x * 100 + e200.y}")
     }
   }
 
@@ -42,15 +46,16 @@ object Day10 extends AocTask {
       if (isColinear && inInterval) false else visible
     }
 
-  def parseMap(raw: Seq[String]): Set[Point] =
+  def parseMap(raw: Seq[String]): Set[Point] = {
     raw.zipWithIndex.foldLeft(Set.empty[Point]) { case (acc, (row, y)) =>
-      row.zipWithIndex.foldLeft(acc) { case (acc, (char, x)) =>
-        char match {
-          case '#' => acc + Point(x, y)
-          case '.' => acc
+        row.zipWithIndex.foldLeft(acc) { case (acc, (char, x)) =>
+          char match {
+            case '#' | 'X' => acc + Point(x, y)
+            case '.' => acc
+          }
         }
       }
-    }
+  }
 
   def findBestLocation(m: Set[Point]): (Point, Seq[Point]) =
     m.foldLeft((Point(0, 0), Seq.empty[Point])) { case ((best, order), p) =>
@@ -64,7 +69,7 @@ object Day10 extends AocTask {
       if (m.isEmpty) Seq.empty else {
         val visible = findVisible(m, p)
         val sorted = sortPointsByAngle(visible, p)
-        sorted ++ eliminate(m.union(sorted.toSet))
+        sorted ++ eliminate(m -- sorted.toSet)
       }
     }
 
@@ -73,8 +78,8 @@ object Day10 extends AocTask {
 
   def findVisible(m: Set[Point], p: Point): Set[Point] = {
     val other = m - p
-    other.foldLeft(Set.empty[Point]) { (found, asteroid) =>
-      if (isVisible(other - asteroid, p, asteroid)) found + asteroid else found
+    other.foldLeft(Set.empty[Point]) { (foundSoFar, asteroid) =>
+      if (isVisible(other, p, asteroid)) foundSoFar + asteroid else foundSoFar
     }
   }
 
@@ -85,8 +90,12 @@ object Day10 extends AocTask {
   def cmpAngle(origin: Point)(p1: Point, p2: Point): Boolean = {
     val dp1 = p1 - origin
     val dp2 = p2 - origin
-    val a1 = Math.atan2(dp1.y, dp1.x)
-    val a2 = Math.atan2(dp2.y, dp2.x)
-    (a2 - a1) < 0
+
+    val d1 = dp1.x < 0
+    val d2 = dp2.x < 0
+    val cmp = if (d1 != d2) d1.compareTo(d2)
+    else if (dp1.x == 0 && dp2.x == 0) p1.y.sign.compareTo(dp2.y.sign)
+    else dp2.x * dp1.y - dp2.y * dp1.x
+    cmp < 0
   }
 }
