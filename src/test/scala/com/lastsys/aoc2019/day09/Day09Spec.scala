@@ -1,5 +1,6 @@
 package com.lastsys.aoc2019.day09
 
+import com.lastsys.aoc2019.util.IntCode
 import org.scalatest.{Matchers, PropSpec}
 import org.scalatest.prop.{TableDrivenPropertyChecks, TableFor2}
 
@@ -16,7 +17,9 @@ class Day09Spec extends PropSpec with TableDrivenPropertyChecks with Matchers {
 
   property("example 1 cases should be valid") {
     forAll (examples1) { (program: ArraySeq[String], output: String) =>
-      Day09.execute(Day09.convertProgramToMapMem(program), 0).output shouldBe output
+      var vm = IntCode(IntCode.convertFromString(program)).putInput(0)
+      while (!vm.halt) vm = vm.step
+      vm.output.mkString("").toString shouldBe output
     }
   }
 }

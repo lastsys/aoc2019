@@ -2,28 +2,32 @@ package com.lastsys.aoc2019.util
 
 import scala.collection.immutable.Queue
 
-case class IntCode(mem: Map[BigInt, BigInt],
-                   pc: BigInt = 0,
-                   relativeBase: BigInt = 0,
-                   input: Queue[BigInt] = Queue.empty,
-                   output: Queue[BigInt] = Queue.empty,
+case class IntCode(mem: Map[Long, Long],
+                   pc: Long = 0,
+                   relativeBase: Long = 0,
+                   input: Queue[Long] = Queue.empty,
+                   output: Queue[Long] = Queue.empty,
                    halt: Boolean = false) {
 
-  def putInput(value: BigInt): IntCode = this.copy(input = input.enqueue(value))
+  def putInput(value: Long): IntCode = this.copy(input = input.enqueue(value))
 
-  def getOutput: (IntCode, BigInt) = {
+  def getOutput: (IntCode, Long) = {
     var m = this
     if (m.output.isEmpty)  {
-      while (m.output.isEmpty) {
+      while (m.output.isEmpty && !m.halt) {
         m = m.step
       }
     }
-    val (value, queue) = m.output.dequeue
-    (m.copy(output = queue), value)
+    if (!m.halt) {
+      val (value, queue) = m.output.dequeue
+      (m.copy(output = queue), value)
+    } else {
+      (m, 0)
+    }
   }
 
   def step: IntCode = {
-    val instruction: BigInt = mem.getOrElse(pc, 0)
+    val instruction: Long = mem.getOrElse(pc, 0)
 
     val m3 = instruction / 10000
     val m2 = (instruction - m3 * 10000) / 1000
@@ -33,7 +37,7 @@ case class IntCode(mem: Map[BigInt, BigInt],
     if (opCode == 99 || halt) {
       this.copy(halt = true)
     } else opCode match {
-      // BigIntddition
+      // Addition
       case 1 =>
         val arg1 = read(m1, mem(pc + 1))
         val arg2 = read(m2, mem(pc + 2))
@@ -47,7 +51,7 @@ case class IntCode(mem: Map[BigInt, BigInt],
         this.copy(mem.updated(arg3, arg1 * arg2), pc = pc + 4)
       // Input
       case 3 =>
-        val arg1 = read(m1, mem(pc + 1))
+        val arg1 = readLiteral(m1, mem(pc + 1))
         this.copy(mem.updated(arg1, input.head), input = input.tail, pc = pc + 2)
       // Output
       case 4 =>
@@ -75,14 +79,14 @@ case class IntCode(mem: Map[BigInt, BigInt],
         val arg2 = read(m2, mem(pc + 2))
         val arg3 = readLiteral(m3, mem(pc + 3))
         this.copy(mem.updated(arg3, if (arg1 == arg2) 1 else 0), pc = pc + 4)
-      // BigIntdjust relative base
+      // Adjust relative base
       case 9 =>
         val arg1 = read(m1, mem(pc + 1))
         this.copy(relativeBase = relativeBase + arg1, pc = pc + 2)
     }
   }
 
-  def read(mode: BigInt, value: BigInt): BigInt =
+  def read(mode: Long, value: Long): Long =
     mode.toInt match {
       // position mode
       case 0 => mem.getOrElse(value, 0)
@@ -92,7 +96,7 @@ case class IntCode(mem: Map[BigInt, BigInt],
       case 2 => mem.getOrElse(relativeBase + value, 0)
     }
 
-  def readLiteral(mode: BigInt, value: BigInt): BigInt =
+  def readLiteral(mode: Long, value: Long): Long =
     mode.toInt match {
       case 0 => value
       case 1 => value
@@ -101,17 +105,17 @@ case class IntCode(mem: Map[BigInt, BigInt],
 }
 
 object IntCode {
-  def convertFromString(program: Seq[String]): Map[BigInt, BigInt] = {
-    program.zipWithIndex.foldLeft(Map.empty[BigInt, BigInt]) { case (acc, (v, i)) =>
-      // TODO: Make sure this works with BigInt later on.
-      acc + (BigInt(i) -> BigInt(v))
+  def convertFromString(program: Seq[String]): Map[Long, Long] = {
+    program.zipWithIndex.foldLeft(Map.empty[Long, Long]) { case (acc, (v, i)) =>
+      // TODO: Make sure this works with Long later on.
+      acc + (i.toLong -> v.toLong)
     }
   }
 
-  def convertFromInt(program: Seq[Int]): Map[BigInt, BigInt] = {
-    program.zipWithIndex.foldLeft(Map.empty[BigInt, BigInt]) { case (acc, (v, i)) =>
-      // TODO: Make sure this works with BigInt later on.
-      acc + (BigInt(i) -> BigInt(v))
+  def convertFromInt(program: Seq[Int]): Map[Long, Long] = {
+    program.zipWithIndex.foldLeft(Map.empty[Long, Long]) { case (acc, (v, i)) =>
+      // TODO: Make sure this works with Long later on.
+      acc + (i.toLong -> v.toLong)
     }
   }
 }
