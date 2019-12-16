@@ -7,22 +7,23 @@ case class IntCode(mem: Map[Long, Long],
                    relativeBase: Long = 0,
                    input: Queue[Long] = Queue.empty,
                    output: Queue[Long] = Queue.empty,
+                   waitingForInput: Boolean = false,
                    halt: Boolean = false) {
 
-  def putInput(value: Long): IntCode = this.copy(input = input.enqueue(value))
+  def putInput(value: Long): IntCode = this.copy(input = input.enqueue(value), waitingForInput = false)
 
-  def getOutput: (IntCode, Long) = {
+  def getOutput: (IntCode, Option[Long]) = {
     var m = this
     if (m.output.isEmpty)  {
-      while (m.output.isEmpty && !m.halt) {
+      while (m.output.isEmpty && !m.halt && !m.waitingForInput) {
         m = m.step
       }
     }
-    if (!m.halt) {
+    if (!m.halt && m.output.nonEmpty) {
       val (value, queue) = m.output.dequeue
-      (m.copy(output = queue), value)
+      (m.copy(output = queue), Some(value))
     } else {
-      (m, 0)
+      (m, None)
     }
   }
 
@@ -52,7 +53,11 @@ case class IntCode(mem: Map[Long, Long],
       // Input
       case 3 =>
         val arg1 = readLiteral(m1, mem(pc + 1))
-        this.copy(mem.updated(arg1, input.head), input = input.tail, pc = pc + 2)
+        if (input.nonEmpty) {
+          this.copy(mem.updated(arg1, input.head), input = input.tail, pc = pc + 2, waitingForInput = false)
+        } else {
+          this.copy(waitingForInput = true)
+        }
       // Output
       case 4 =>
         val arg1 = read(m1, mem(pc + 1))

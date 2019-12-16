@@ -46,9 +46,9 @@ object Day11 extends AocTask {
       vm = ic3
       if (color == 1) hull += turtle.p else hull -= turtle.p
       painted += turtle.p
-      turtle = direction.toInt match {
-        case 0 => turtle.turnLeft.moveForward
-        case 1 => turtle.turnRight.moveForward
+      turtle = direction.map(_.toInt) match {
+        case Some(0) => turtle.turnLeft.moveForward
+        case Some(1) => turtle.turnRight.moveForward
       }
       vm = vm.putInput(if (hull.contains(turtle.p)) 1 else 0)
     }
